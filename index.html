@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fa">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>روزشمار خرید موس و کیبورد</title>
+    <link rel="manifest" href="manifest.json" />
+</head>
+
+<body>
+    <h1>🎯 روزشمار خرید موس و کیبورد</h1>
+    <p id="message">در حال محاسبه...</p>
+    <script>
+        const targetDate = new Date('2025-07-27T00:00:00+03:30'); // وقت ایران
+        const dailyMessage = "😎 فقط ( ) روز دیگه مونده تا بریم موس 🖱️ و کیبورد ⌨️ رو بخریم! 🔥";
+        const finalMessage = "🚀 پاشو بریم موس 🖱️ و کیبورد ⌨️ بخریم! 🎉";
+
+        function updateMessage() {
+            const now = new Date();
+            const diffTime = targetDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const message = diffDays > 0 ? dailyMessage.replace("( )", diffDays) : finalMessage;
+            document.getElementById("message").innerText = message;
+        }
+
+        updateMessage();
+
+        // Schedule notifications at 15:00 and 21:00 Tehran time
+        function scheduleNotification(hour) {
+            setInterval(() => {
+                const now = new Date();
+                const tehranOffset = -210; // UTC+3:30 in minutes
+                const localOffset = now.getTimezoneOffset();
+                const tehranTime = new Date(now.getTime() + (tehranOffset - localOffset) * 60000);
+
+                if (tehranTime.getHours() === hour && tehranTime.getMinutes() === 0) {
+                    showNotification();
+                }
+            }, 60000); // check every minute
+        }
+
+        function showNotification() {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    const now = new Date();
+                    const diffDays = Math.ceil((targetDate - now) / (1000 * 60 * 60 * 24));
+                    const body = diffDays > 0 ? dailyMessage.replace("( )", diffDays) : finalMessage;
+                    new Notification("📝 یادآور خرید", { body });
+                }
+            });
+        }
+
+        scheduleNotification(15);
+        scheduleNotification(21);
+    </script>
+</body>
+
+</html>
